@@ -105,3 +105,30 @@ mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 for i in range(1000):
     batch_xs, batch_ys = mnist.train.next_batch(100)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+# SECTION: EVALUATING OUR MODEL
+# tf.argmax is an extremely useful function which gives you the index of the
+# highest entry in a tensor along some axis. For example, tf.argmax(y,1) is the
+# label our model thinks is most likely for each input, while tf.argmax(y_,1)
+# is the correct label. We can use tf.equal to check if our prediction matches
+# the truth.
+correct_prediction = tf.equal(
+    tf.argmax(y, 1),
+    tf.argmax(y_, 1)
+)
+
+# That gives us a list of booleans. To determine what fraction are correct, we
+# cast to floating point numbers and then take the mean. For example, [True,
+# False, True, True] would become [1,0,1,1] which would become 0.75.
+accuracy = tf.reduce_mean(
+    tf.cast(correct_prediction, tf.float32)
+)
+
+# Finally, we ask for our accuracy on our test data. This should be about 92%.
+print(
+    'Accuracy of training data: ' + repr(
+        sess.run(
+            accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}
+        ) * 100
+    ) + '%'
+)
